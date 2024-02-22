@@ -29,7 +29,7 @@ public class main : MonoBehaviour
     private bool isPlaying = false;
 
     private Transform[] children;
-
+    private AudioSource audioSource;
     // Attach the GameObject you want to explode in the Inspector
 
     // Start is called before the first frame update
@@ -38,6 +38,7 @@ public class main : MonoBehaviour
         // Invoke the Explode method after 2 seconds
         // Invoke("ExplodeF", 2f);
         Anchor();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void ExplodeT(){
@@ -64,7 +65,7 @@ public class main : MonoBehaviour
             return;
         }
 
-        AudioSource.PlayClipAtPoint(cannonFire, transform.position);
+        audioSource.PlayOneShot(cannonFire);
 
         // Start a coroutine to introduce a delay
         StartCoroutine(DelayCoroutine(applyGravity));
@@ -152,7 +153,7 @@ public class main : MonoBehaviour
         // Invoke makeKinetic method after 2 seconds if applyGravity is false
         if (!applyGravity)
         {
-            Invoke("MakeKinetic", 1f);
+            Invoke(nameof(MakeKinetic), 1f);
         }
     }
 
@@ -169,6 +170,12 @@ public class main : MonoBehaviour
             child.gameObject.GetComponent<Rigidbody>().isKinematic = true;
         }
         Debug.Log("MakeKinetic");
+    }
+
+    IEnumerator ResetAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Reset();
     }
 
     public void Reset()
@@ -191,10 +198,10 @@ public class main : MonoBehaviour
         // Activate the original object
         Debug.Log("reset");
         Debug.Log("objectToExplode: " + objectToExplode);
+        Destroy(duplicateObject); // Adjust the time as needed
         mainObject.SetActive(true);
         // Destroy the duplicate object after the explosion
         Debug.Log("duplicateObject: " + duplicateObject);
-        Destroy(duplicateObject); // Adjust the time as needed
     }
 
     public void Anchor()
@@ -219,24 +226,42 @@ public class main : MonoBehaviour
 
     public void Play()
     {
+        /*
+        6 lights on
+        25 blast
+        36 reset
+        41 adhistana
+        44 bhitti
+        50 -devakoahtas
+        54 Vimana
+        1.28 StoryEnd
+        */
+        if (isPlaying)
+        {
+            return;
+        }
         isPlaying = true;
         // stop the light
         SetStoryMode();
         directLight.SetActive(false);
-        AudioSource.PlayClipAtPoint(MainStory, transform.position);
-        Invoke("ActivateLight", 3f);
+        audioSource.PlayOneShot(MainStory);
+        StartCoroutine(ActivateLightAfterDelay(7f));
 
-        Invoke("Blast", 8f);
-        StartCoroutine(SetTooltipActiveAfterDelay(Adhisthana, 10f));
-        StartCoroutine(SetTooltipActiveAfterDelay(Bhitti, 12f));
-        StartCoroutine(SetTooltipActiveAfterDelay(Devakosthas, 14f));
-        StartCoroutine(SetTooltipActiveAfterDelay(Vimana, 16f));
+        StartCoroutine(BlastAfterDelay(25f));
+        StartCoroutine(ResetAfterDelay(36f));
+        StartCoroutine(SetTooltipActiveAfterDelay(Adhisthana, 43f));
+        StartCoroutine(SetTooltipActiveAfterDelay(Bhitti, 45f));
+        StartCoroutine(SetTooltipActiveAfterDelay(Devakosthas, 50f));
+        StartCoroutine(SetTooltipActiveAfterDelay(Vimana, 54f));
 
 
-        StartCoroutine(SetTooltipInactiveAfterDelay(Adhisthana, 14f));
-        StartCoroutine(SetTooltipInactiveAfterDelay(Bhitti, 16f));
-        StartCoroutine(SetTooltipInactiveAfterDelay(Devakosthas, 18f));
-        StartCoroutine(SetTooltipInactiveAfterDelay(Vimana, 20f));
+        StartCoroutine(StoryEndAfterDelay(90f));
+    }
+
+    IEnumerator ActivateLightAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ActivateLight();
     }
 
     private void ActivateLight()
@@ -269,6 +294,12 @@ public class main : MonoBehaviour
         AudioSource.PlayClipAtPoint(cannonFire, duplicateObject.transform.position);
     }
 
+    IEnumerator BlastAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Blast();
+    }
+
     private void Blast()
     {
         if (!isPlaying)
@@ -276,10 +307,6 @@ public class main : MonoBehaviour
             return;
         }
         Explode(false);
-        // invoke the reset method after 5 seconds
-        Invoke("Reset", 3f);
-
-        
     }
 
     IEnumerator SetTooltipActiveAfterDelay(GameObject tooltip, float delay)
@@ -312,41 +339,29 @@ public class main : MonoBehaviour
         tooltip.SetActive(false);
     }
 
+    IEnumerator StoryEndAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        StopThePlay();
+    }
+
     public void StopThePlay()
     {
         if (!isPlaying)
         {
             return;
         }
-        // stop the audio
-        AudioSource audio = GetComponent<AudioSource>();
-        audio.Stop();
-        
-
+        StopAllCoroutines();
+        Reset();
         StoryModeEnd();
-        isPlaying = false;
-        if (duplicateObject != null)
-        {
-            Destroy(duplicateObject);
-        }
-        mainObject.SetActive(true);
-
-        
-        
-        StopCoroutine(SetTooltipActiveAfterDelay(Adhisthana, 10f));
-        StopCoroutine(SetTooltipActiveAfterDelay(Bhitti, 12f));
-        StopCoroutine(SetTooltipActiveAfterDelay(Devakosthas, 14f));
-        StopCoroutine(SetTooltipActiveAfterDelay(Vimana, 16f));
-
-        StopCoroutine(SetTooltipInactiveAfterDelay(Adhisthana, 14f));
-        StopCoroutine(SetTooltipInactiveAfterDelay(Bhitti, 16f));
-        StopCoroutine(SetTooltipInactiveAfterDelay(Devakosthas, 18f));
-        StopCoroutine(SetTooltipInactiveAfterDelay(Vimana, 20f));
-
+        audioSource.Stop();
+        directLight.SetActive(true);
         Adhisthana.SetActive(false);
         Bhitti.SetActive(false);
         Devakosthas.SetActive(false);
         Vimana.SetActive(false);
+        isPlaying = false;
+        Debug.Log("StopThePlay");
     }
 
 }

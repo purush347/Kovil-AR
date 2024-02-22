@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   directLight: {fileID: 705507993}
   cannonFire: {fileID: 8300000, guid: 149a504edb51ecb49b9325534b26e981, type: 3}
-  MainStory: {fileID: 8300000, guid: 05cfaf34c28cc9041b781e3d03830112, type: 3}
+  MainStory: {fileID: 8300000, guid: 8ab969561e485b9458bdb745dcf3a71a, type: 3}
   Bhitti: {fileID: 1379708282008885}
   Devakosthas: {fileID: 1379708611054128}
   Adhisthana: {fileID: 1083550093121816}

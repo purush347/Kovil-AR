@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Heart.unity
+    guid: 2740a11b8214dcd49b46cd984d1e29e3
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: ddc04d6b4b982fe4b943035e02899368, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d093d4c9663070344a3ddb9d700f2004, type: 2}
